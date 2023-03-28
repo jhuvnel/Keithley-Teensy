@@ -59,7 +59,7 @@ namespace KeithleyCrosspoint
             var DIR = Properties.Settings.Default.OpenFile_directory;
             //StimLogFile = new StreamWriter($"{DIR}\\StimLogFile_{DateTime.Now:yyyy_MMdd_HHmmss}.txt");
             //StimLogFile = new StreamWriter($"StimLogFile_{DateTime.Now:yyyy_MMdd_HHmmss}.txt");
-            StimLogFile = new StreamWriter($"V:\\Monkey Single Unit Recording\\StimulationLog\\StimLogFile_{DateTime.Now:yyyy_MMdd_HHmmss}.txt");
+            StimLogFile = new StreamWriter($"\\\\10.16.39.7\\labdata\\Monkey Single Unit Recording\\StimulationLog\\StimLogFile_{DateTime.Now:yyyy_MMdd_HHmmss}.txt");
 
             // Used to send "comment" strings to Spike2, to document stimulation parameters in the data files.
             // We use COM0COM "virtual" serial port driver to connect COM59 to COM19.

@@ -50,3 +50,15 @@ V:\Chow\KeithleyCrosspoint\KeithleyCrosspoint\obj\Debug\KeithleyCrosspoint.cspro
 V:\Chow\KeithleyCrosspoint\KeithleyCrosspoint\obj\Debug\KeithleyCrosspoint.exe
 V:\Chow\KeithleyCrosspoint\KeithleyCrosspoint\obj\Debug\KeithleyCrosspoint.pdb
 V:\Chow\KeithleyCrosspoint\KeithleyCrosspoint\obj\Debug\KeithleyCrosspoint.csprojResolveAssemblyReference.cache
+C:\Users\Brian\Documents\GitHub\Keithley-Teensy\bin\Debug\KeithleyCrosspoint.exe.config
+C:\Users\Brian\Documents\GitHub\Keithley-Teensy\bin\Debug\KeithleyCrosspoint.exe
+C:\Users\Brian\Documents\GitHub\Keithley-Teensy\bin\Debug\KeithleyCrosspoint.pdb
+C:\Users\Brian\Documents\GitHub\Keithley-Teensy\obj\Debug\KeithleyCrosspoint.csproj.AssemblyReference.cache
+C:\Users\Brian\Documents\GitHub\Keithley-Teensy\obj\Debug\KeithleyCrosspoint.csproj.SuggestedBindingRedirects.cache
+C:\Users\Brian\Documents\GitHub\Keithley-Teensy\obj\Debug\KeithleyCrosspoint.CMDProcessor.resources
+C:\Users\Brian\Documents\GitHub\Keithley-Teensy\obj\Debug\KeithleyCrosspoint.Form1.resources
+C:\Users\Brian\Documents\GitHub\Keithley-Teensy\obj\Debug\KeithleyCrosspoint.Properties.Resources.resources
+C:\Users\Brian\Documents\GitHub\Keithley-Teensy\obj\Debug\KeithleyCrosspoint.csproj.GenerateResource.cache
+C:\Users\Brian\Documents\GitHub\Keithley-Teensy\obj\Debug\KeithleyCrosspoint.csproj.CoreCompileInputs.cache
+C:\Users\Brian\Documents\GitHub\Keithley-Teensy\obj\Debug\KeithleyCrosspoint.exe
+C:\Users\Brian\Documents\GitHub\Keithley-Teensy\obj\Debug\KeithleyCrosspoint.pdb
