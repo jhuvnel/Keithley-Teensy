@@ -1,0 +1,52 @@
+C:\prj\Ross7\KeithleyStim\KeithleyCrosspoint\bin\Debug\KeithleyCrosspoint.exe.config
+C:\prj\Ross7\KeithleyStim\KeithleyCrosspoint\bin\Debug\KeithleyCrosspoint.exe
+C:\prj\Ross7\KeithleyStim\KeithleyCrosspoint\bin\Debug\KeithleyCrosspoint.pdb
+C:\prj\Ross7\KeithleyStim\KeithleyCrosspoint\obj\Debug\KeithleyCrosspoint.Form1.resources
+C:\prj\Ross7\KeithleyStim\KeithleyCrosspoint\obj\Debug\KeithleyCrosspoint.Properties.Resources.resources
+C:\prj\Ross7\KeithleyStim\KeithleyCrosspoint\obj\Debug\KeithleyCrosspoint.csproj.GenerateResource.Cache
+C:\prj\Ross7\KeithleyStim\KeithleyCrosspoint\obj\Debug\KeithleyCrosspoint.exe
+C:\prj\Ross7\KeithleyStim\KeithleyCrosspoint\obj\Debug\KeithleyCrosspoint.pdb
+C:\prj\Ross7\KeithleyStim\KeithleyCrosspoint\obj\Debug\KeithleyCrosspoint.CMDProcessor.resources
+C:\prj\Ross7\KeithleyStim\KeithleyCrosspoint\obj\Debug\KeithleyCrosspoint.csprojResolveAssemblyReference.cache
+C:\prj\Ross7\KeithleyStim\KeithleyCrosspoint\obj\Debug\KeithleyCrosspoint.csproj.CoreCompileInputs.cache
+V:\Roberts Dale\Projects\KeithleyStim\KeithleyCrosspoint\bin\Debug\KeithleyCrosspoint.exe.config
+V:\Roberts Dale\Projects\KeithleyStim\KeithleyCrosspoint\bin\Debug\KeithleyCrosspoint.exe
+V:\Roberts Dale\Projects\KeithleyStim\KeithleyCrosspoint\bin\Debug\KeithleyCrosspoint.pdb
+V:\Roberts Dale\Projects\KeithleyStim\KeithleyCrosspoint\obj\Debug\KeithleyCrosspoint.CMDProcessor.resources
+V:\Roberts Dale\Projects\KeithleyStim\KeithleyCrosspoint\obj\Debug\KeithleyCrosspoint.Form1.resources
+V:\Roberts Dale\Projects\KeithleyStim\KeithleyCrosspoint\obj\Debug\KeithleyCrosspoint.Properties.Resources.resources
+V:\Roberts Dale\Projects\KeithleyStim\KeithleyCrosspoint\obj\Debug\KeithleyCrosspoint.csproj.GenerateResource.Cache
+V:\Roberts Dale\Projects\KeithleyStim\KeithleyCrosspoint\obj\Debug\KeithleyCrosspoint.csproj.CoreCompileInputs.cache
+V:\Roberts Dale\Projects\KeithleyStim\KeithleyCrosspoint\obj\Debug\KeithleyCrosspoint.exe
+V:\Roberts Dale\Projects\KeithleyStim\KeithleyCrosspoint\obj\Debug\KeithleyCrosspoint.pdb
+\\10.16.39.7\labdata\Roberts Dale\Projects\KeithleyStim\KeithleyCrosspoint\obj\Debug\KeithleyCrosspoint.csprojResolveAssemblyReference.cache
+\\10.16.39.7\labdata\Roberts Dale\Projects\KeithleyStim\KeithleyCrosspoint\obj\Debug\KeithleyCrosspoint.CMDProcessor.resources
+\\10.16.39.7\labdata\Roberts Dale\Projects\KeithleyStim\KeithleyCrosspoint\obj\Debug\KeithleyCrosspoint.Form1.resources
+\\10.16.39.7\labdata\Roberts Dale\Projects\KeithleyStim\KeithleyCrosspoint\obj\Debug\KeithleyCrosspoint.Properties.Resources.resources
+\\10.16.39.7\labdata\Roberts Dale\Projects\KeithleyStim\KeithleyCrosspoint\obj\Debug\KeithleyCrosspoint.csproj.GenerateResource.Cache
+\\10.16.39.7\labdata\Roberts Dale\Projects\KeithleyStim\KeithleyCrosspoint\obj\Debug\KeithleyCrosspoint.csproj.CoreCompileInputs.cache
+\\10.16.39.7\labdata\Roberts Dale\Projects\KeithleyStim\KeithleyCrosspoint\obj\Debug\KeithleyCrosspoint.exe
+\\10.16.39.7\labdata\Roberts Dale\Projects\KeithleyStim\KeithleyCrosspoint\obj\Debug\KeithleyCrosspoint.pdb
+V:\Roberts Dale\Projects\KeithleyStim\KeithleyCrosspoint\obj\Debug\KeithleyCrosspoint.csprojResolveAssemblyReference.cache
+R:\Chow\KeithleyCrosspoint\KeithleyCrosspoint\bin\Debug\KeithleyCrosspoint.exe.config
+R:\Chow\KeithleyCrosspoint\KeithleyCrosspoint\obj\Debug\KeithleyCrosspoint.exe
+R:\Chow\KeithleyCrosspoint\KeithleyCrosspoint\obj\Debug\KeithleyCrosspoint.pdb
+R:\Chow\KeithleyCrosspoint\KeithleyCrosspoint\obj\Debug\KeithleyCrosspoint.csprojResolveAssemblyReference.cache
+R:\Chow\KeithleyCrosspoint\KeithleyCrosspoint\obj\Debug\KeithleyCrosspoint.CMDProcessor.resources
+R:\Chow\KeithleyCrosspoint\KeithleyCrosspoint\obj\Debug\KeithleyCrosspoint.Form1.resources
+R:\Chow\KeithleyCrosspoint\KeithleyCrosspoint\obj\Debug\KeithleyCrosspoint.Properties.Resources.resources
+R:\Chow\KeithleyCrosspoint\KeithleyCrosspoint\obj\Debug\KeithleyCrosspoint.csproj.GenerateResource.Cache
+R:\Chow\KeithleyCrosspoint\KeithleyCrosspoint\obj\Debug\KeithleyCrosspoint.csproj.CoreCompileInputs.cache
+R:\Chow\KeithleyCrosspoint\KeithleyCrosspoint\bin\Debug\KeithleyCrosspoint.exe
+R:\Chow\KeithleyCrosspoint\KeithleyCrosspoint\bin\Debug\KeithleyCrosspoint.pdb
+V:\Chow\KeithleyCrosspoint\KeithleyCrosspoint\bin\Debug\KeithleyCrosspoint.exe.config
+V:\Chow\KeithleyCrosspoint\KeithleyCrosspoint\bin\Debug\KeithleyCrosspoint.exe
+V:\Chow\KeithleyCrosspoint\KeithleyCrosspoint\bin\Debug\KeithleyCrosspoint.pdb
+V:\Chow\KeithleyCrosspoint\KeithleyCrosspoint\obj\Debug\KeithleyCrosspoint.CMDProcessor.resources
+V:\Chow\KeithleyCrosspoint\KeithleyCrosspoint\obj\Debug\KeithleyCrosspoint.Form1.resources
+V:\Chow\KeithleyCrosspoint\KeithleyCrosspoint\obj\Debug\KeithleyCrosspoint.Properties.Resources.resources
+V:\Chow\KeithleyCrosspoint\KeithleyCrosspoint\obj\Debug\KeithleyCrosspoint.csproj.GenerateResource.Cache
+V:\Chow\KeithleyCrosspoint\KeithleyCrosspoint\obj\Debug\KeithleyCrosspoint.csproj.CoreCompileInputs.cache
+V:\Chow\KeithleyCrosspoint\KeithleyCrosspoint\obj\Debug\KeithleyCrosspoint.exe
+V:\Chow\KeithleyCrosspoint\KeithleyCrosspoint\obj\Debug\KeithleyCrosspoint.pdb
+V:\Chow\KeithleyCrosspoint\KeithleyCrosspoint\obj\Debug\KeithleyCrosspoint.csprojResolveAssemblyReference.cache
