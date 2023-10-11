@@ -19,7 +19,7 @@ namespace KeithleyCrosspoint
 {    
     public partial class CMDProcessor : UserControl
     {
-        // 20231011 KE-Testing branch
+        // 20231011 KE-Testing branch 
         Keithley6221 K6221 = new Keithley6221();
         TeensyDevice Teensy = new TeensyDevice();
         ZapperGUI Zapper = new ZapperGUI("2789010");  // Request a particular Teensy by serial number.
