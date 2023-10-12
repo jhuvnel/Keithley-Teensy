@@ -332,6 +332,67 @@ namespace KeithleyCrosspoint
                 );
             return true;
         }
+
+
+        int PREV_Phase1Dur_ms, PREV_Phase2Dur_ms;
+        int PREV_Gap_ms;
+
+        // Return TRUE for success.
+        // Generate the arbitrary waveform data points used by the Keithley.
+        // Uses 25uSec per output data point, 100 data points maximum.
+        // Phase2 amplitude is ALWAYS computed to be "charge balanced" with the
+        // first phase, so that duration*amplitude is equal for both phases.
+        const int STEP_mSec = 40;
+        //public bool SetWaveform_Asymm(int Phase1Dur_us, int InterphaseGap_us, int Phase2Dur_us)
+        public bool SetWaveformDC(int Phase1Dur_ms, double Phase1Ampl_uA, int InterphaseGap_ms, int Phase2Dur_ms, double Phase2Ampl_uA)
+        {
+            if ((Phase1Dur_ms == PREV_Phase1Dur_ms) && (Phase2Dur_ms == PREV_Phase2Dur_ms) &&
+                   (InterphaseGap_ms == PREV_Gap_ms))
+                return true;
+
+            PREV_Phase1Dur_ms = Phase1Dur_ms;
+            PREV_Phase2Dur_ms = Phase2Dur_ms;
+            PREV_Gap_ms = InterphaseGap_ms;
+
+            int Total_uSec = Phase1Dur_ms + InterphaseGap_ms + Phase2Dur_ms;
+            if (Total_uSec / STEP_mSec > 99)
+            {
+                dprint($"Waveform too long ({Total_uSec}uSec)!! Must be <{STEP_mSec * 99}uSec.\n");
+                return false;
+            }
+
+            int NPoints = (Total_uSec / STEP_mSec) + 1; // Need to add a 0 at the end.
+            double[] ArbData = new double[NPoints];
+            int Arb_idx = 0;
+
+            // DC "long pulses" are not necessarily "charge balanced".
+            double Phase2Ratio = Phase1Ampl_uA / Phase2Ampl_uA;
+
+            for (int i = 0; i < (Phase1Dur_ms / STEP_mSec); ++i, ++Arb_idx)
+                ArbData[Arb_idx] = -1;
+
+            for (int i = 0; i < (InterphaseGap_ms / STEP_mSec); ++i, ++Arb_idx)
+                ArbData[Arb_idx] = 0;
+
+            for (int i = 0; i < (Phase2Dur_ms / STEP_mSec); ++i, ++Arb_idx)
+                ArbData[Arb_idx] = Phase2Ratio;
+
+            ArbData[Arb_idx++] = 0;
+            dprint($"#points {ArbData.Length}=={Phase1Dur_ms / STEP_mSec}+{InterphaseGap_ms / STEP_mSec}+{Phase2Dur_ms / STEP_mSec}+1  "
+                 + $"Waveform:  [{string.Join(",", ArbData)}]\n");
+
+            // The ARB frequency should be 1/(25uSec*NPoints).
+            double Freq_Hz = 1.0 / (NPoints * STEP_mSec * 1.0e-3);  // should be 0.25 Hz (4s long intervals)
+
+            SendCommands(
+                "sour:wave:abor\n"
+                + $"sour:wave:arb:data {string.Join(",", ArbData)}\n"
+                + $"sour:wave:freq {Freq_Hz}\n"
+                + "sour:wave:arm\n"
+                + "sour:wave:init\n"
+                );
+            return true;
+        }
     }
 
 
