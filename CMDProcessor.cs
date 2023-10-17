@@ -457,6 +457,7 @@ namespace KeithleyCrosspoint
                         Phase1Sign: Math.Sign(Convert.ToInt32(tokens[8])),
                         Phase2Sign: Math.Sign(Convert.ToInt32(tokens[9])),
 
+                        RampDur_msec: Convert.ToInt32(tokens[10]), //cannot be less than 10ms
                         Offset_uA: Convert.ToDouble(tokens[11])
                         );
                     break;
@@ -466,12 +467,11 @@ namespace KeithleyCrosspoint
                         StimE: Convert.ToInt32(tokens[1]),
                         RefE: Convert.ToInt32(tokens[2]),
 
-                        NumCycles: Convert.ToInt32(tokens[3]),
+                        NumCycles: tokens[3],
                         StimGap_msec: Convert.ToInt32(tokens[4]),
 
-                        Frequency: Convert.ToDouble(tokens[5]),
-                        Phase1Ampl_uA: Convert.ToDouble(tokens[6]),
-                        Phase1Sign: Math.Sign(Convert.ToInt32(tokens[7])),
+                        Freq_Hz: Convert.ToDouble(tokens[5]),
+                        Ampl_uA: Convert.ToDouble(tokens[6]),
 
                         Offset_uA: Convert.ToDouble(tokens[8])
                         );
@@ -668,12 +668,14 @@ namespace KeithleyCrosspoint
             int Phase1Sign,             //
             int Phase2Sign,             //
 
+            int RampDur_msec = 0,       //
             double Offset_uA = 0        //
             )
         {
             dprint($"stim_dc_trapezoid: {NumCycles}/{StimGap_msec}  "
                   + $"E{StimE}:E{RefE}  "
-                  + $"P1{Phase1Sign * Phase1Ampl_uA}uA P2{Phase2Sign * Phase2Ampl_uA}uA {Phase1Dur_msec}mS:{InterPhaseGap_msec}mS:{Phase2Dur_msec}mS\n"
+                  + $"P1{Phase1Sign * Phase1Ampl_uA}uA P2{Phase2Sign * Phase2Ampl_uA}uA {Phase1Dur_msec}mS:{InterPhaseGap_msec}mS:{Phase2Dur_msec}mS "
+                  + $"Offset{Offset_uA}uA\n"
             );
 
             CMD_Running = true;
@@ -698,9 +700,9 @@ namespace KeithleyCrosspoint
 
             // SetWaveform really only re-programs the Keithley waveform if it is different
             // fromt the last time it was called.
-            //K6221.SetWaveform(PhaseDur_usec, InterPhaseGap_usec);
-            K6221.SetWaveformDC(Phase1Dur_msec, Phase1Ampl_uA, InterPhaseGap_msec, Phase2Dur_msec, Phase2Ampl_uA);
+            K6221.SetWaveformDC(Phase1Dur_msec, Phase1Ampl_uA, Phase1Sign, InterPhaseGap_msec, Phase2Dur_msec, Phase2Ampl_uA, Phase2Sign, RampDur_msec, StimGap_msec);
             K6221.SetAmplitude_uA(Phase1Ampl_uA);
+            K6221.SetOffset_uA(Offset_uA);
             K6221.GotResponse_sem.Block();
 #if COM0COM
             K6221.SendCommands("*opc? 100\n");
@@ -713,20 +715,18 @@ namespace KeithleyCrosspoint
             Thread.Sleep(15);
             //Teensy.SendCommands($"keithley_trigger {StimRate_pps} {StimDur_msec*StimRate_pps/1000.0}\n");
             int StimInterval_msec = StimGap_msec + Phase1Dur_msec + InterPhaseGap_msec + Phase2Dur_msec;
-            int StimRate_pps = (StimInterval_msec / 1000) / NumCycles;
-            TeensyKeithleyTrigger_string = $"keithley_trigger {StimRate_pps} {StimInterval_msec * StimRate_pps / 1000.0}\n";
+            var StimRate_pps = 1000/StimInterval_msec;
+            TeensyKeithleyTrigger_string = $"keithley_trigger {StimRate_pps} {NumCycles}\n";
 
             dprint("AWAITing Keithley response before sending trigger...\n");
             // This will remain blocked until the Keithley receives its 1\n response from
             // the *opc? command (or until it times out).
             await K6221.GotResponse_sem.WaitAsync(millisecondsTimeout: 2000);
 
-            dprint("AWAITing Zapper response...\n");
-            await Zapper.GotResponse_sem.WaitAsync(200);
+            //dprint("AWAITing Zapper response...\n");
+            //await Zapper.GotResponse_sem.WaitAsync(200);
 
             // Log to CED Spike2 software.
-            var StimInterval_ms = 1 / StimRate_pps * 1000.0;
-            int NStim = (int)(StimInterval_msec * StimRate_pps / 1000.0);
             string TimeStr = $"{CMD_DateTime:HH:mm:ss.fff}";
 
             try
@@ -760,17 +760,100 @@ namespace KeithleyCrosspoint
             int StimE,                  //
             int RefE,                   //
 
-            int NumCycles,              //
+            string NumCycles,              // NumCycles can be an integer or "inf" denoting infinite cycles
             int StimGap_msec,           //
             
-            double Frequency,           //
-            double Phase1Ampl_uA,       //
-            int Phase1Sign,             //
+            double Freq_Hz,           //
+            double Ampl_uA,       //
 
             double Offset_uA = 0        //
             )
         {
-            // NEED TO EDIT HERE
+
+        dprint($"stim_dc_sine: {NumCycles}  "
+            + $"E{StimE}:E{RefE}  "
+            + $"Freq{Freq_Hz}Hz Ampl{Ampl_uA}uA Offset{Offset_uA}uA\n"
+            );
+
+            CMD_Running = true;
+
+            dprint_ResetTimestamp();
+
+            /*
+            // Log to CED Spike2 software.
+            var StimInterval_ms = 1 / StimRate_pps * 1000.0;
+            int NStim = (int)(StimDur_msec * StimRate_pps / 1000.0);
+            string TimeStr = $"{CMD_DateTime:HH:mm:ss.fff}";
+
+            try
+            {
+                SER_ToSpike2.WriteLine($"Stm{StimE} Ref{RefE} {Phase1Ampl_uA:.0}uA {NumPulseTrains}x({NStim}x{StimInterval_ms}mS+{StimGap_msec}mS_Gap)  {Phase1Dur_usec}/{InterPhaseGap_usec}/{Phase2Dur_usec}uSec [{TimeStr}]");
+            }
+            catch (TimeoutException) { }
+            */
+
+            // Read and clear the Keithley error queue. This will NOT unblock the semaphore.
+            K6221.SendCommands("syst:err?\n" + "*cls\n");
+
+            // SetWaveform really only re-programs the Keithley waveform if it is different
+            // fromt the last time it was called.
+            //K6221.SetWaveform(PhaseDur_usec, InterPhaseGap_usec);
+            K6221.SetWaveformSine(NumCycles, Freq_Hz);
+            K6221.SetAmplitude_uA(Ampl_uA);
+            K6221.SetOffset_uA(Offset_uA);
+            K6221.GotResponse_sem.Block();
+#if COM0COM
+            K6221.SendCommands("*opc? 100\n");
+#else
+            K6221.SendCommands("*opc?\n"); // Request a response from the Keithley.
+#endif
+
+            Teensy.SendCommands($"clr\nset {RefE} 14\nset {StimE} 15\nsendbits\n");
+            // Allow some time for the Keithley to process its command.
+            Thread.Sleep(15);
+
+            // MODIFY TEENSY TRIGGER CODE
+            //Teensy.SendCommands($"keithley_trigger {StimRate_pps} {StimDur_msec*StimRate_pps/1000.0}\n");
+            int StimInterval_msec = StimGap_msec + Convert.ToInt32(Convert.ToInt32(NumCycles) / Freq_Hz);
+            double StimRate_pps = 1000 / StimInterval_msec;
+            TeensyKeithleyTrigger_string = $"keithley_trigger {StimRate_pps} 1\n"; // set the number of "cycles" to be 1
+
+            dprint("AWAITing Keithley response before sending trigger...\n");
+            // This will remain blocked until the Keithley receives its 1\n response from
+            // the *opc? command (or until it times out).
+            await K6221.GotResponse_sem.WaitAsync(millisecondsTimeout: 2000);
+
+            //dprint("AWAITing Zapper response...\n");
+            //await Zapper.GotResponse_sem.WaitAsync(200);
+
+            // Log to CED Spike2 software.
+            string TimeStr = $"{CMD_DateTime:HH:mm:ss.fff}";
+
+            try
+            {
+                SER_ToSpike2.WriteLine($"Stm{StimE} Ref{RefE} Sine Freq{Freq_Hz}Hz Ampl{Ampl_uA}uA Offset{Offset_uA}uA {NumCycles}cycles {StimGap_msec}mS_Gap  [{TimeStr}]");
+            }
+            catch (TimeoutException) { }
+
+            // We always do the first trigger here, and subsequent ones in the timer routine.
+            //Teensy.SendCommands(TeensyKeithleyTrigger_string);
+            // NOW using Spike2/CED to send the Stim pulses, to keep in sync with CED analog samples.
+            CEDTalker.SendString(TeensyKeithleyTrigger_string);
+            if (BlankingTrigger.Checked == true)
+            {
+                bool hi = true;
+            }
+
+            // we do not need a countdown here because there is only one long "pulse train"
+            //NumCycles_cntdn = NumCycles;
+            //NumCyclesTimer.Interval = StimInterval_msec;
+            //NumCyclesTimer.Start();
+
+            //if (NumCycles_cntdn > 1)
+            //UpdateRunningText();
+
+            // Wait for the pulse train to finish.
+            //Thread.Sleep(StimDur_msec + StimGap_msec);
         }
 
         private void SetSineMod(double SineFreq, double DeltaPulseFreq, Int32 NCycles)

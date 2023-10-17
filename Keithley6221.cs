@@ -253,6 +253,23 @@ namespace KeithleyCrosspoint
             //SendCommands($"sour:wave:ampl {Amplitude_uA * 1e-6}\n");
         }
 
+        // Set the ARB waveform DC offset, in micro-amps.
+        // The Keithley expects the value in Amps, so we scale by 1e-6.
+        // Keithley's acceptable range is -.105 to .105 A
+        // Note, this should NEVER be used with metal electrodes!
+        public void SetOffset_uA(double Offset_uA)
+        {
+            // limit to +- 200 uA
+            if (Offset_uA  > 200)
+                Offset_uA = 200;
+            else if (Offset_uA < -200)
+                Offset_uA = -200;
+            string cmdstr = $"sour:wave:off {Offset_uA * 1e-6}\n";
+            //Debug.Write($"SetOffset command: '{cmdstr}'\n");
+            SendCommands(cmdstr);
+
+        }
+
         int PREV_Phase1Dur_us, PREV_Phase2Dur_us;
         int PREV_Gap_us;
 
@@ -342,58 +359,99 @@ namespace KeithleyCrosspoint
         // Uses 25uSec per output data point, 100 data points maximum.
         // Phase2 amplitude is ALWAYS computed to be "charge balanced" with the
         // first phase, so that duration*amplitude is equal for both phases.
-        const int STEP_mSec = 40;
+        const int STEP_mSec = 10;
         //public bool SetWaveform_Asymm(int Phase1Dur_us, int InterphaseGap_us, int Phase2Dur_us)
-        public bool SetWaveformDC(int Phase1Dur_ms, double Phase1Ampl_uA, int InterphaseGap_ms, int Phase2Dur_ms, double Phase2Ampl_uA)
+        public bool SetWaveformDC(int Phase1Dur_ms, double Phase1Ampl_uA, int Phase1Sign, int InterphaseGap_ms, int Phase2Dur_ms, double Phase2Ampl_uA, int Phase2Sign, int RampDur_ms, int StimGap_ms)
         {
-            if ((Phase1Dur_ms == PREV_Phase1Dur_ms) && (Phase2Dur_ms == PREV_Phase2Dur_ms) &&
-                   (InterphaseGap_ms == PREV_Gap_ms))
-                return true;
+            //if ((Phase1Dur_ms == PREV_Phase1Dur_ms) && (Phase2Dur_ms == PREV_Phase2Dur_ms) &&
+            //       (InterphaseGap_ms == PREV_Gap_ms))
+            //    return true;
 
-            PREV_Phase1Dur_ms = Phase1Dur_ms;
-            PREV_Phase2Dur_ms = Phase2Dur_ms;
-            PREV_Gap_ms = InterphaseGap_ms;
+            //PREV_Phase1Dur_ms = Phase1Dur_ms;
+            //PREV_Phase2Dur_ms = Phase2Dur_ms;
+            //PREV_Gap_ms = InterphaseGap_ms;
 
-            int Total_uSec = Phase1Dur_ms + InterphaseGap_ms + Phase2Dur_ms;
-            if (Total_uSec / STEP_mSec > 99)
-            {
-                dprint($"Waveform too long ({Total_uSec}uSec)!! Must be <{STEP_mSec * 99}uSec.\n");
-                return false;
-            }
+            int Total_mSec = RampDur_ms + Phase1Dur_ms + InterphaseGap_ms + Phase2Dur_ms + StimGap_ms;
 
-            int NPoints = (Total_uSec / STEP_mSec) + 1; // Need to add a 0 at the end.
+            int NPoints = (Total_mSec / STEP_mSec) + 1; // Need to add a 0 at the end.
             double[] ArbData = new double[NPoints];
             int Arb_idx = 0;
 
             // DC "long pulses" are not necessarily "charge balanced".
             double Phase2Ratio = Phase1Ampl_uA / Phase2Ampl_uA;
 
+            for (int i = 1; i <= (RampDur_ms / STEP_mSec) ; ++i, ++Arb_idx)
+                ArbData[Arb_idx] = Phase1Sign * (i / RampDur_ms * STEP_mSec);
+
             for (int i = 0; i < (Phase1Dur_ms / STEP_mSec); ++i, ++Arb_idx)
-                ArbData[Arb_idx] = -1;
+                ArbData[Arb_idx] = Phase1Sign * 1;
+
+            for (int i = 0; i < (RampDur_ms / STEP_mSec); ++i, ++Arb_idx)
+                ArbData[Arb_idx] = Phase1Sign * (1.0 - (i / RampDur_ms * STEP_mSec));
 
             for (int i = 0; i < (InterphaseGap_ms / STEP_mSec); ++i, ++Arb_idx)
                 ArbData[Arb_idx] = 0;
 
-            for (int i = 0; i < (Phase2Dur_ms / STEP_mSec); ++i, ++Arb_idx)
-                ArbData[Arb_idx] = Phase2Ratio;
+            for (int i = 0; i < (RampDur_ms / STEP_mSec); ++i, ++Arb_idx)
+                ArbData[Arb_idx] = 0.1 * Phase2Sign * (i / RampDur_ms * STEP_mSec);
 
-            ArbData[Arb_idx++] = 0;
+            for (int i = 0; i < (Phase2Dur_ms / STEP_mSec); ++i, ++Arb_idx)
+                ArbData[Arb_idx] = Phase2Sign * Phase2Ratio;
+
+            for (int i = 0; i < (RampDur_ms / STEP_mSec); ++i, ++Arb_idx)
+                ArbData[Arb_idx] = Phase2Sign * (1.0 - (i / RampDur_ms * STEP_mSec));
+            
+            for (int i = 0; i < (StimGap_ms / STEP_mSec); ++i, ++Arb_idx)
+                ArbData[Arb_idx] = 0;
+
+            ArbData[Arb_idx++] = 0; // must add 0 to the end
+
+
             dprint($"#points {ArbData.Length}=={Phase1Dur_ms / STEP_mSec}+{InterphaseGap_ms / STEP_mSec}+{Phase2Dur_ms / STEP_mSec}+1  "
                  + $"Waveform:  [{string.Join(",", ArbData)}]\n");
 
             // The ARB frequency should be 1/(25uSec*NPoints).
-            double Freq_Hz = 1.0 / (NPoints * STEP_mSec * 1.0e-3);  // should be 0.25 Hz (4s long intervals)
+            double Freq_Hz = 1 / (NPoints * STEP_mSec * 1.0e-3);  // should be 0.25 Hz (4s long intervals)
 
-            SendCommands(
-                "sour:wave:abor\n"
-                + $"sour:wave:arb:data {string.Join(",", ArbData)}\n"
-                + $"sour:wave:freq {Freq_Hz}\n"
+            double n_blockof100 = Arb_idx / 100;
+            string Commands = "sour:wave:abor\n";
+            for (int i = 0; i < Math.Ceiling(n_blockof100); i++)
+            {
+                if (i == 0)
+                    Commands += "sour:wave:arb:data ";
+                else
+                    Commands += "sour:wave:arb:app ";
+
+                for (int j = 0; j < 100; j++)
+                    Commands += $"{string.Join(",", ArbData[i*100 + j])}";
+
+                Commands += "\n";
+            }
+            Commands += $"sour:wave:freq {Freq_Hz}\n"
                 + "sour:wave:arm\n"
-                + "sour:wave:init\n"
-                );
+                + "sour:wave:init\n";
+
+            SendCommands(Commands);
             return true;
         }
-    }
+        
+        public bool SetWaveformSine(string NumCycles, double Freq_Hz)
+        {
+            // We already have offset and amplitude setting methods, so we only need to set the function (sine), number of cycles, and frequency here
+            string Commands = "sour:wave:abor\n";
+            Commands += "sour:wave:func sin\n"
+                + $"sour:wave:dur:cycl {NumCycles}\n"
+                + $"sour:wave:freq {Freq_Hz}\n"
+                + "sour:wave:pmar:stat on\n" // set phase marker output on trigger cable
+                + "sour:wave:pmar 180\n" // phase marker at 180 is 0-crossing for sinusoids
+                + "sour:wave:arm\n"
+                + "sour:wave:init\n";
+
+            SendCommands(Commands);
+
+            return true;
+        }
+    } 
 
 
     static class DebugMain
